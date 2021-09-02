@@ -3,7 +3,7 @@ import {NAMES} from "@/api/deckBuildArrays"
 import {VALUES} from "@/api/deckBuildArrays"
 
 export default {
-    nameSpaced: true,
+    namespaced: true,
     
     state: {
         deck: []
@@ -18,16 +18,23 @@ export default {
             commit('buildDeck')
         },
 
-        start({commit}) {
+        start() {            
             for (let i = 0; i < 2; i++) {
-                commit("player/drawCard", null, {root: true}),
-                commit("dealer/drawCard", null, {root: true})
+                this.dispatch("player/drawCardPlayer")
+                this.dispatch("dealer/drawCardDealer")
             }
+        },
+
+        reset({commit}) {
+            commit("buildDeck"),
+            commit("player/resetPlayer", null, {root: true}),
+            commit("dealer/resetDealer", null, {root: true})
         }
     },
 
     mutations: {
         buildDeck(state){
+            state.deck = [];
             let cards = [];
             
             for (let i = 0; i < SUITS.length; i++) {
@@ -37,6 +44,10 @@ export default {
             }
 
             state.deck = cards;
+        },
+
+        removeCard(state, randomNumber) {
+            state.deck.splice(randomNumber, 1);
         }
     } 
 }
