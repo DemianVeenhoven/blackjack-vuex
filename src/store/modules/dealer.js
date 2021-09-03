@@ -2,8 +2,7 @@ export default {
     namespaced: true,
 
     state: {
-        hand: [],
-        score: 0
+        hand: []
     },
 
     getters: {
@@ -15,16 +14,48 @@ export default {
             } else {
                 return 0;
             }
+        },
+
+        isDead(state, getters) {
+            let hasAces = state.hand.filter(e => e.value === 11).length > 0;
+
+            if(getters.score < 22) {
+                return false
+            } else if(hasAces === true) {
+                while(getters.score > 21) {
+                    state.hand.forEach(function(obj) {
+                        if (obj.value === 11) {
+                            obj.value = 1
+                        }
+                    })
+                }
+
+                return false
+            } else {
+                return true
+            }
         }
     },
 
     actions: {
-        drawCardDealer({commit, rootState}) {
-            let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
-            let drawnCard = rootState.game.deck[randomNumber];
+        drawCardDealer({commit, state, getters, rootState}) {
+            if(state.hand.length < 2) {
+                let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
+                let drawnCard = rootState.game.deck[randomNumber];
 
-            commit("game/removeCard", randomNumber, {root:true}),
-            commit("drawCard", drawnCard)
+                commit("game/removeCard", randomNumber, {root:true}),
+                commit("drawCard", drawnCard)
+            } else {
+                while(getters.score < 17) {
+                    let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
+                    let drawnCard = rootState.game.deck[randomNumber];
+    
+                    commit("game/removeCard", randomNumber, {root:true}),
+                    commit("drawCard", drawnCard)
+                }
+
+                this.dispatch("game/findWinner");
+            }
         }
     },
 
@@ -36,7 +67,7 @@ export default {
 
         resetDealer(state) {
             state.hand = [];
-            state.score = 0;
+            state.hasPassed = false;
         }
     }  
 }

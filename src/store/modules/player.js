@@ -15,6 +15,26 @@ export default {
             } else {
                 return 0;
             }
+        },
+
+        isDead(state, getters) {
+            let hasAces = state.hand.filter(e => e.value === 11).length > 0;
+
+            if(getters.score < 22) {
+                return false
+            } else if(hasAces === true) {
+                while(getters.score > 21) {
+                    state.hand.forEach(function(obj) {
+                        if (obj.value === 11) {
+                            obj.value = 1
+                        }
+                    })
+                }
+
+                return false
+            } else {
+                return true
+            }
         }
     },
 
@@ -25,6 +45,11 @@ export default {
 
             commit("game/removeCard", randomNumber, {root:true}),
             commit("drawCard", drawnCard)
+        },
+
+        passPlayer({commit}) {
+            commit("pass")
+            this.dispatch("dealer/drawCardDealer");
         }
     },
 
