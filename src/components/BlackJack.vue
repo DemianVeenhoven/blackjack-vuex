@@ -1,18 +1,25 @@
 <template>
     <div>
         <h1>BlackJack</h1>
-        <p>{{gameHasEnded}}</p>
-        <h2 v-if="BlackJack === true">{{Winner}} has BlackJack</h2>
-        <h2 v-if="Winner != ''">The winner is: {{Winner}}</h2>
+        
+        <h2 v-if="BlackJack === true">{{winner}} has BlackJack</h2>
+        <h2 v-if="winner != null">The winner is: {{winner}}</h2>
         <h2 v-if="Draw === true">Draw</h2>
 
         <ul>
             <p class="name">Player</p>
             <li v-for="card in PlayerHand" :key="card">{{ card.name }} - {{ card.value }}</li>
             <p>Total Score: {{playerScore}}</p>
+        </ul>
 
             <hr>
 
+        <ul v-if="gameHasEnded === false">
+            <p class="name">Dealer</p>
+            <li v-for="card in DealerVisibleHand" :key="card">{{ card.name }} - {{ card.value }}</li>
+        </ul>
+
+        <ul v-if="gameHasEnded === true">
             <p class="name">Dealer</p>
             <li v-for="card in DealerHand" :key="card">{{ card.name }} - {{ card.value }}</li>
             <p>Total Score: {{dealerScore}}</p>
@@ -38,17 +45,16 @@ export default {
     computed: {
         ...mapState ({
             PlayerHand: state => state.player.hand,
-            PlayerHasPassed: state => state.player.hasPassed,
+            DealerVisibleHand: state => state.dealer.visibleHand,
             DealerHand: state => state.dealer.hand,
             BlackJack: state => state.game.blackJack,
-            Winner: state => state.game.winner,
             Draw: state => state.game.draw
         }),
 
         ...mapGetters ({
             playerScore: "player/score",
             dealerScore: "dealer/score",
-            playerIsDead: "player/isDead",
+            winner: "game/findWinner",
             gameHasEnded: "game/gameHasEnded"
         })
     },

@@ -30,7 +30,6 @@ export default {
                         }
                     })
                 }
-
                 return false
             } else {
                 return true
@@ -39,12 +38,16 @@ export default {
     },
 
     actions: {
-        drawCardPlayer({commit, rootState}) {
+        drawCardPlayer({commit, state, rootState}) {
             let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
             let drawnCard = rootState.game.deck[randomNumber];
 
             commit("game/removeCard", randomNumber, {root:true}),
             commit("drawCard", drawnCard)
+            console.log(state.hand.length)
+            if(state.hand.length === 2) {
+                this.dispatch("game/checkBlackJack");
+            }
         },
 
         passPlayer({commit}) {

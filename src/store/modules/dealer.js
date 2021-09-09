@@ -2,7 +2,9 @@ export default {
     namespaced: true,
 
     state: {
-        hand: []
+        hand: [],
+        visibleHand: [],
+        hasPassed: false
     },
 
     getters: {
@@ -45,6 +47,12 @@ export default {
 
                 commit("game/removeCard", randomNumber, {root:true}),
                 commit("drawCard", drawnCard)
+
+                if(state.hand.length === 1) {
+                    commit("firstCard", drawnCard)
+                }
+
+                this.dispatch("game/checkBlackJack");
             } else {
                 while(getters.score < 17) {
                     let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
@@ -54,19 +62,27 @@ export default {
                     commit("drawCard", drawnCard)
                 }
 
-                this.dispatch("game/findWinner");
+                commit("pass")
             }
         }
     },
 
     mutations: {
         drawCard(state, drawnCard) {
-
             state.hand.push(drawnCard);
+        },
+
+        firstCard(state, drawnCard) {
+            state.visibleHand.push(drawnCard);
+        },
+
+        pass(state) {
+            state.hasPassed = true;
         },
 
         resetDealer(state) {
             state.hand = [];
+            state.visibleHand = [];
             state.hasPassed = false;
         }
     }  
