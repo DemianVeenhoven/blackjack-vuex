@@ -19,7 +19,7 @@ export default {
 
         isDead(state, getters) {
             let hasAces = state.hand.filter(e => e.value === 11).length > 0;
-
+            
             if(getters.score < 22) {
                 return false
             } else if(hasAces === true) {
@@ -44,7 +44,6 @@ export default {
 
             commit("game/removeCard", randomNumber, {root:true}),
             commit("drawCard", drawnCard)
-            console.log(state.hand.length)
             if(state.hand.length === 2) {
                 this.dispatch("game/checkBlackJack");
             }

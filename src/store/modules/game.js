@@ -19,7 +19,7 @@ export default {
                 } else {
                     return "Dealer"
                 } 
-            } else if(rootGetters["player/score"] > 21) {
+            } else if(rootGetters["player/isDead"] === true) {
                 return "Dealer"
             } else if(rootState.dealer.hasPassed === true) {
                 if(rootGetters["dealer/isDead"] === true) {
