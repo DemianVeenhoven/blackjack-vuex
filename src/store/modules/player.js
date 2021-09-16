@@ -52,7 +52,7 @@ export default {
 
         passPlayer({commit}) {
             commit("pass")
-            this.dispatch("dealer/drawCardDealer");
+            this.dispatch("dealer/turnDealer");
         }
     },
 

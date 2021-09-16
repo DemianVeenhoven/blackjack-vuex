@@ -8,7 +8,6 @@ export default {
     state: {
         deck: [],
         blackJack: false,
-        draw: false
     },
 
     getters: {
@@ -26,7 +25,9 @@ export default {
                     return "Player"
                 } else if(rootGetters["player/score"] > rootGetters["dealer/score"]) {
                     return "Player"
-                } else if(state.draw === false) {
+                } else if(rootGetters["player/score"] === rootGetters["dealer/score"]) {
+                    return "Draw"
+                } else {
                     return "Dealer"
                 }
             } else {
@@ -40,8 +41,6 @@ export default {
             } else if (state.blackJack === true) {
                 return true
             } else if (getters.findWinner != null) {
-                return true
-            } else if (state.draw === true) {
                 return true
             } else {
                 return false
@@ -69,12 +68,6 @@ export default {
             } 
         },
 
-        checkDraw({commit, rootGetters}) {
-            if(rootGetters["player/score"] === rootGetters["dealer/score"]) {
-                commit("draw");
-            }
-        },
-
         reset({commit}) {
             commit("buildDeck"),
             commit("resetGame"),
@@ -86,16 +79,12 @@ export default {
     mutations: {
         buildDeck(state){
             state.deck = [];
-            let cards = [];
             
             for (let i = 0; i < SUITS.length; i++) {
                 for (let j = 0; j < NAMES.length; j++) {
-                    // todo: rechtstreeks naar deck pushen zonder tussenkomst van cards array
-                    cards.push({name: [NAMES[j], SUITS[i]].join(" "), value: VALUES[j]});
+                    state.deck.push({name: [NAMES[j], SUITS[i]].join(" "), value: VALUES[j]});
                 }
             }
-
-            state.deck = cards;
         },
 
         removeCard(state, randomNumber) {
@@ -106,13 +95,8 @@ export default {
             state.blackJack = true;
         },
 
-        draw(state) {
-            state.draw = true;
-        },
-
         resetGame(state) {
             state.blackJack = false;
-            state.draw = false;
         }
     } 
 }

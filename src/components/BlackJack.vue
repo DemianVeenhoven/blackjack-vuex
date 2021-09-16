@@ -2,15 +2,15 @@
     <div>
         <h1>BlackJack</h1>
         
-        <h2 v-if="BlackJack === true">{{winner}} has BlackJack</h2>
-        <h2 v-if="winner != null">The winner is: {{winner}}</h2>
-        <h2 v-if="Draw === true">Draw</h2>
+        <h2 v-if="blackJack === true">{{winner}} has BlackJack</h2>
+        <h2 v-if="winner != null && winner != 'Draw'">The winner is: {{winner}}</h2>
+        <h2 v-if="winner === 'Draw'">Draw</h2>
 
         <!-- todo: voeg twee componenten toe: player en dealer component. Beide componenten laten eigen hand zien -->
 
         <ul>
             <p class="name">Player</p>
-            <li v-for="card in PlayerHand" :key="card">{{ card.name }} - {{ card.value }}</li>
+            <li v-for="card in playerHand" :key="card">{{ card.name }} - {{ card.value }}</li>
             <p>Total Score: {{playerScore}}</p>
         </ul>
 
@@ -18,20 +18,20 @@
 
         <ul v-if="gameHasEnded === false">
             <p class="name">Dealer</p>
-            <li v-for="card in DealerVisibleHand" :key="card">{{ card.name }} - {{ card.value }}</li>
+            <li v-for="card in dealerVisibleHand" :key="card">{{ card.name }} - {{ card.value }}</li>
         </ul>
 
         <ul v-if="gameHasEnded === true">
             <p class="name">Dealer</p>
-            <li v-for="card in DealerHand" :key="card">{{ card.name }} - {{ card.value }}</li>
+            <li v-for="card in dealerHand" :key="card">{{ card.name }} - {{ card.value }}</li>
             <p>Total Score: {{dealerScore}}</p>
         </ul>
 
         <hr>
 
         <button :disabled="!(playerScore === 0)" @click="start()">Start</button>
-        <button :disabled="!(gameHasEnded === false)" @click="drawCardPlayer()">Draw a card</button> <!-- "hit" -->
-        <button :disabled="!(gameHasEnded === false)" @click="pass()">Pass</button>                  <!-- "stand" -->
+        <button :disabled="!(gameHasEnded === false)" @click="drawCardPlayer()">Hit</button> <!-- "hit" -->
+        <button :disabled="!(gameHasEnded === false)" @click="pass()">Stand</button>                  <!-- "stand" -->
         <button :disabled="!(gameHasEnded === true)" @click="reset()">Reset</button>
     </div>
 </template>
@@ -45,13 +45,11 @@ export default {
     },
 
     computed: {
-        // todo: kies upper of lower pascal-case in al je code, dus niet beide door elkaar gebruiken
         ...mapState ({
-            PlayerHand: state => state.player.hand,
-            DealerVisibleHand: state => state.dealer.visibleHand,
-            DealerHand: state => state.dealer.hand,
-            BlackJack: state => state.game.blackJack,
-            Draw: state => state.game.draw
+            playerHand: state => state.player.hand,
+            dealerVisibleHand: state => state.dealer.visibleHand,
+            dealerHand: state => state.dealer.hand,
+            blackJack: state => state.game.blackJack,
         }),
 
         ...mapGetters ({

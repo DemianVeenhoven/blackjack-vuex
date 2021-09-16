@@ -40,32 +40,26 @@ export default {
     },
 
     actions: {
-        drawCardDealer({commit, state, getters, rootState}) {
-            if(state.hand.length < 2) {
-                let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
-                let drawnCard = rootState.game.deck[randomNumber];
+        drawCardDealer({commit, state, rootState}) {
+            let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
+            let drawnCard = rootState.game.deck[randomNumber];
 
-                commit("game/removeCard", randomNumber, {root:true}),
-                commit("drawCard", drawnCard)
+            commit("game/removeCard", randomNumber, {root:true}),
+            commit("drawCard", drawnCard)
 
-                if(state.hand.length === 1) {
-                    commit("firstCard", drawnCard)
-                }
-
-                this.dispatch("game/checkBlackJack");
-            } else {
-                // todo: het spelen van de beurt zou ik opsplitsen naar een eigen action naast het trekken van een kaart. Deze nieuwe functie gebruikt dan ook
-                // de kaart-trekken functie. Zo wordt je code leesbaarder en heb je de if-else statements uit deze action ook niet meer nodig
-                while(getters.score < 17) {
-                    let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
-                    let drawnCard = rootState.game.deck[randomNumber];
-    
-                    commit("game/removeCard", randomNumber, {root:true}),
-                    commit("drawCard", drawnCard)
-                }
-
-                commit("pass")
+            if(state.hand.length === 1) {
+                commit("firstCard", drawnCard)
             }
+
+            this.dispatch("game/checkBlackJack");
+        },
+
+        turnDealer({commit, getters}) {
+            while(getters.score < 17) {
+                this.dispatch("dealer/drawCardDealer");
+            }
+
+            commit("pass")
         }
     },
 
