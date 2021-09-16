@@ -90,6 +90,7 @@ export default {
             
             for (let i = 0; i < SUITS.length; i++) {
                 for (let j = 0; j < NAMES.length; j++) {
+                    // todo: rechtstreeks naar deck pushen zonder tussenkomst van cards array
                     cards.push({name: [NAMES[j], SUITS[i]].join(" "), value: VALUES[j]});
                 }
             }

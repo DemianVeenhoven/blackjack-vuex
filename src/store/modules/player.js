@@ -10,6 +10,7 @@ export default {
         score(state) {
             let cardValues = state.hand.map(card => card.value);
 
+            // todo: je kunt een default startwaarde van 0 meegeven aan de reduce functie zodat je de if / else niet nodig hebt
             if(cardValues.length > 0) {
                 return cardValues.reduce((accumulator, currentScore) => accumulator + currentScore);
             } else {

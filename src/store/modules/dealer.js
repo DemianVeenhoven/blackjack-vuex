@@ -54,6 +54,8 @@ export default {
 
                 this.dispatch("game/checkBlackJack");
             } else {
+                // todo: het spelen van de beurt zou ik opsplitsen naar een eigen action naast het trekken van een kaart. Deze nieuwe functie gebruikt dan ook
+                // de kaart-trekken functie. Zo wordt je code leesbaarder en heb je de if-else statements uit deze action ook niet meer nodig
                 while(getters.score < 17) {
                     let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
                     let drawnCard = rootState.game.deck[randomNumber];
