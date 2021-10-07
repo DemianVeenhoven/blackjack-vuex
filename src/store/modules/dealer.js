@@ -8,58 +8,39 @@ export default {
     },
 
     getters: {
-        score(state) {
-            let cardValues = state.hand.map(card => card.value);
 
-            if(cardValues.length > 0) {
-                return cardValues.reduce((accumulator, currentScore) => accumulator + currentScore);
-            } else {
-                return 0;
-            }
-        },
-
-        isDead(state, getters) {
-            let hasAces = state.hand.filter(e => e.value === 11).length > 0;
-
-            if(getters.score < 22) {
-                return false
-            } else if(hasAces === true) {
-                while(getters.score > 21) {
-                    state.hand.forEach(function(obj) {
-                        if (obj.value === 11) {
-                            obj.value = 1
-                        }
-                    })
-                }
-
-                return false
-            } else {
-                return true
-            }
-        }
     },
 
     actions: {
-        drawCardDealer({commit, state, rootState}) {
+        deal({commit, rootState}) {
             let randomNumber = Math.floor(Math.random() * rootState.game.deck.length);
             let drawnCard = rootState.game.deck[randomNumber];
 
-            commit("game/removeCard", randomNumber, {root:true}),
-            commit("drawCard", drawnCard)
+            commit("game/removeCard", randomNumber, {root:true});
+
+            return drawnCard;
+        },
+
+        async drawCardDealer({commit, state}) {
+            let drawnCard = await this.dispatch("dealer/deal");
+
+            commit("drawCard", drawnCard);
 
             if(state.hand.length === 1) {
                 commit("firstCard", drawnCard)
             }
 
-            this.dispatch("game/checkBlackJack");
+            if(state.hand.length === 2) {
+                this.dispatch("game/checkBlackJack");
+            }
         },
 
-        turnDealer({commit, getters}) {
-            while(getters.score < 17) {
-                this.dispatch("dealer/drawCardDealer");
+        async turnDealer({commit, rootGetters}) {
+            while(rootGetters["game/dealerScore"] < 17) {
+                await this.dispatch("dealer/drawCardDealer");
             }
 
-            commit("pass")
+            commit("pass");
         }
     },
 

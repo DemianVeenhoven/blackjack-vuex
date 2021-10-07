@@ -11,21 +11,21 @@ export default {
     },
 
     getters: {
-        findWinner(state, getters, rootState, rootGetters) {
+        findWinner(state, getters, rootState) {
             if(state.blackJack === true) {
-                if(rootGetters["player/score"] === 21) {
+                if(getters.playerScore === 21) {
                     return "Player"
                 } else {
                     return "Dealer"
-                } 
-            } else if(rootGetters["player/isDead"] === true) {
+                }
+            } else if(getters.playerIsDead === true) {
                 return "Dealer"
             } else if(rootState.dealer.hasPassed === true) {
-                if(rootGetters["dealer/isDead"] === true) {
+                if(getters.playerIsDead === true) {
                     return "Player"
-                } else if(rootGetters["player/score"] > rootGetters["dealer/score"]) {
+                } else if(getters.playerScore > getters.dealerScore) {
                     return "Player"
-                } else if(rootGetters["player/score"] === rootGetters["dealer/score"]) {
+                } else if(getters.playerScore === getters.dealerScore) {
                     return "Draw"
                 } else {
                     return "Dealer"
@@ -35,8 +35,8 @@ export default {
             }
         },
 
-        gameHasEnded(state, getters, rootState, rootGetters) {
-            if (rootGetters["player/score"] === 0){
+        gameHasEnded(state, getters) {
+            if (getters.playerScore === 0){
                 return true
             } else if (state.blackJack === true) {
                 return true
@@ -45,7 +45,60 @@ export default {
             } else {
                 return false
             }
-        }
+        },
+
+        score() {
+             return function (argument) {
+                let score = 0;
+                let hasAces = argument.hand.filter(e => e.value === 11).length > 0;
+                let cardValues = argument.hand.map(card => card.value);
+                
+                score = cardValues.reduce((accumulator, currentScore) => accumulator + currentScore, 0);
+    
+                if(score > 21) {
+                    if(hasAces === true) {
+                        while(score > 21) {
+                            argument.hand.forEach(function(obj) {
+                                if (obj.value === 11) {
+                                    obj.value = 1
+                                }
+                            })
+    
+                            cardValues = argument.hand.map(card => card.value);
+                            score = cardValues.reduce((accumulator, currentScore) => accumulator + currentScore, 0);
+                        }
+                    }
+                }
+    
+                return score
+            };       
+        },
+
+        playerScore(state, getters, rootState) {
+            return getters.score(rootState.player);
+        },
+
+        dealerScore(state, getters, rootState) {
+            return getters.score(rootState.dealer);
+        },
+
+        isDead(state, getters) {
+            return function (argument) {
+                if(getters.score(argument) > 21) {
+                    return true
+                } else {
+                    return false
+                }
+            };
+        },
+
+        playerIsDead(state, getters, rootState) {
+            return getters.isDead(rootState.player)
+        },
+
+        dealerIsDead(state, getters, rootState) {
+            return getters.isDead(rootState.dealer)
+        },
     },
 
     actions: {
@@ -60,10 +113,10 @@ export default {
             }    
         },
 
-        checkBlackJack({commit, rootGetters}) {
-            if(rootGetters["player/score"] === 21 && rootGetters["dealer/score"] === 21) {
+        checkBlackJack({commit, getters}) {
+            if(getters.playerScore === 21 && getters.dealerScore === 21) {
                 commit("draw");
-            } else if (rootGetters["player/score"] === 21 || rootGetters["dealer/score"] === 21) {
+            } else if (getters.playerScore === 21 || getters.dealerScore === 21) {
                 commit("blackJack");
             } 
         },
